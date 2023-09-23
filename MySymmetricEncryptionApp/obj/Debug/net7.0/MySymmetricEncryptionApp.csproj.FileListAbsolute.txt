@@ -1,0 +1,15 @@
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/bin/Debug/net7.0/MySymmetricEncryptionApp
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/bin/Debug/net7.0/MySymmetricEncryptionApp.deps.json
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/bin/Debug/net7.0/MySymmetricEncryptionApp.runtimeconfig.json
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/bin/Debug/net7.0/MySymmetricEncryptionApp.dll
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/bin/Debug/net7.0/MySymmetricEncryptionApp.pdb
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.csproj.AssemblyReference.cache
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.GeneratedMSBuildEditorConfig.editorconfig
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.AssemblyInfoInputs.cache
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.AssemblyInfo.cs
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.csproj.CoreCompileInputs.cache
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.dll
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/refint/MySymmetricEncryptionApp.dll
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.pdb
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/MySymmetricEncryptionApp.genruntimeconfig.cache
+/home/atanas/repos/symmetric-key-encryption-/MySymmetricEncryptionApp/obj/Debug/net7.0/ref/MySymmetricEncryptionApp.dll
