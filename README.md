@@ -20,6 +20,9 @@ Before using this application, ensure you have the following prerequisites insta
    dotnet build
 4. Run the application:
 
+   ```bash
+   dotnet run
+
 ## Usage
 
 **Encrypt Message** 
@@ -45,7 +48,7 @@ Before using this application, ensure you have the following prerequisites insta
 
 ## Additional Resources
 
- -For more information on authenticated encryption in .NET with AES-GCM, refer to Authenticated Encryption in .NET with AES-GCM.
+ - For more information on authenticated encryption in .NET with AES-GCM, refer to Authenticated Encryption in .NET with AES-GCM.
 
 - To learn how to write text to a file in .NET, check out How to: Write text to a file.
 
