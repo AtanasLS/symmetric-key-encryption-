@@ -47,7 +47,7 @@ namespace MySymmetricEncryptionApp
             string messageToEncrypt = Console.ReadLine();
 
             byte[] aesKey = GenerateAesKey(passphrase);
-            (byte[] ciphertext, byte[] nonce, byte[] tag) = EncryptWithNet(messageToEncrypt, aesKey);
+            (byte[] ciphertext, byte[] nonce, byte[] tag) = Encrypt(messageToEncrypt, aesKey);
 
             // Save the ciphertext, nonce, and tag to separate files
             File.WriteAllBytes("ciphertext.bin", ciphertext);
@@ -68,8 +68,8 @@ namespace MySymmetricEncryptionApp
                 byte[] nonce = File.ReadAllBytes("nonce.bin");
                 byte[] tag = File.ReadAllBytes("tag.bin");
 
-                byte[] aesKeyForDecryption = GenerateAesKey(passphrase);
-                string decryptedMessage = DecryptWithNet(ciphertext, nonce, tag, aesKeyForDecryption);
+                byte[] aesKey = GenerateAesKey(passphrase);
+                string decryptedMessage = Decrypt(ciphertext, nonce, tag, aesKey);
                 Console.WriteLine("Decrypted Message:");
                 Console.WriteLine(decryptedMessage);
             }
@@ -81,13 +81,15 @@ namespace MySymmetricEncryptionApp
 
          static byte[] GenerateAesKey(string passphrase)
         {
-            // Use a key derivation function (KDF) like PBKDF2 to derive a valid AES key
+            //Derive an encryption key from the user's passphrase using PBKDF2
+
             using Rfc2898DeriveBytes kdf = new Rfc2898DeriveBytes(passphrase, new byte[16], 10000);
-            return kdf.GetBytes(16); // 16 bytes = 128 bits
+            return kdf.GetBytes(16); 
+
         }
 
        
-        private static (byte[] ciphertext, byte[] nonce, byte[] tag) EncryptWithNet(string plaintext, byte[] key)
+        private static (byte[] ciphertext, byte[] nonce, byte[] tag) Encrypt(string plaintext, byte[] key)
         {
             using (var aes = new AesGcm(key))
             {
@@ -105,7 +107,7 @@ namespace MySymmetricEncryptionApp
             }
         }
 
-        private static string DecryptWithNet(byte[] ciphertext, byte[] nonce, byte[] tag, byte[] key)
+        private static string Decrypt(byte[] ciphertext, byte[] nonce, byte[] tag, byte[] key)
         {
             using (var aes = new AesGcm(key))
             {
