@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MySymmetricEncryptionApp
 {
-    class Program
+     class Program
     {
         static void Main()
         {
@@ -47,22 +47,30 @@ namespace MySymmetricEncryptionApp
             string messageToEncrypt = Console.ReadLine();
 
             byte[] aesKey = GenerateAesKey(passphrase);
-            string encryptedMessage = EncryptMessage(messageToEncrypt, aesKey);
+            (byte[] ciphertext, byte[] nonce, byte[] tag) = EncryptWithNet(messageToEncrypt, aesKey);
 
-            File.WriteAllText("encrypted.txt", encryptedMessage);
-            Console.WriteLine("Message encrypted and saved to 'encrypted.txt'");
+            // Save the ciphertext, nonce, and tag to separate files
+            File.WriteAllBytes("ciphertext.bin", ciphertext);
+            File.WriteAllBytes("nonce.bin", nonce);
+            File.WriteAllBytes("tag.bin", tag);
+
+            Console.WriteLine("Message encrypted and saved.");
         }
 
         static void ReadMessage()
         {
-            if (File.Exists("encrypted.txt"))
+            if (File.Exists("ciphertext.bin") && File.Exists("nonce.bin") && File.Exists("tag.bin"))
             {
                 Console.WriteLine("Passphrase:");
                 string passphrase = Console.ReadLine();
 
-                string encryptedText = File.ReadAllText("encrypted.txt");
+                byte[] ciphertext = File.ReadAllBytes("ciphertext.bin");
+                byte[] nonce = File.ReadAllBytes("nonce.bin");
+                byte[] tag = File.ReadAllBytes("tag.bin");
+
                 byte[] aesKeyForDecryption = GenerateAesKey(passphrase);
-                string decryptedMessage = DecryptMessage(encryptedText, aesKeyForDecryption);
+                string decryptedMessage = DecryptWithNet(ciphertext, nonce, tag, aesKeyForDecryption);
+                Console.WriteLine("Decrypted Message:");
                 Console.WriteLine(decryptedMessage);
             }
             else
@@ -71,62 +79,42 @@ namespace MySymmetricEncryptionApp
             }
         }
 
-        static byte[] GenerateAesKey(string passphrase)
+         static byte[] GenerateAesKey(string passphrase)
         {
+            // Use a key derivation function (KDF) like PBKDF2 to derive a valid AES key
             using Rfc2898DeriveBytes kdf = new Rfc2898DeriveBytes(passphrase, new byte[16], 10000);
             return kdf.GetBytes(16); // 16 bytes = 128 bits
         }
 
-        static string EncryptMessage(string message, byte[] aesKey)
+       
+        private static (byte[] ciphertext, byte[] nonce, byte[] tag) EncryptWithNet(string plaintext, byte[] key)
         {
-            using Aes aesAlg = Aes.Create();
-            aesAlg.Key = aesKey;
-            aesAlg.Mode = CipherMode.CBC;
-
-            aesAlg.GenerateIV();
-
-            using ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-            byte[] encryptedBytes;
-            using (MemoryStream msEncrypt = new MemoryStream())
+            using (var aes = new AesGcm(key))
             {
-                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                {
-                    using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                    {
-                        swEncrypt.Write(message);
-                    }
-                }
-                encryptedBytes = msEncrypt.ToArray();
+                var nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
+                RandomNumberGenerator.Fill(nonce);
+
+                var tag = new byte[AesGcm.TagByteSizes.MaxSize];
+
+                var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+                var ciphertext = new byte[plaintextBytes.Length];
+
+                aes.Encrypt(nonce, plaintextBytes, ciphertext, tag);
+
+                return (ciphertext, nonce, tag);
             }
-
-            byte[] result = new byte[aesAlg.IV.Length + encryptedBytes.Length];
-            aesAlg.IV.CopyTo(result, 0);
-            encryptedBytes.CopyTo(result, aesAlg.IV.Length);
-
-            return Convert.ToBase64String(result);
         }
 
-        static string DecryptMessage(string encryptedText, byte[] aesKey)
+        private static string DecryptWithNet(byte[] ciphertext, byte[] nonce, byte[] tag, byte[] key)
         {
-            using Aes aesAlg = Aes.Create();
-            aesAlg.Key = aesKey;
-            aesAlg.Mode = CipherMode.CBC;
+            using (var aes = new AesGcm(key))
+            {
+                var plaintextBytes = new byte[ciphertext.Length];
 
-            byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
-            byte[] iv = new byte[aesAlg.IV.Length];
-            byte[] encryptedData = new byte[encryptedBytes.Length - aesAlg.IV.Length];
-            Array.Copy(encryptedBytes, iv, aesAlg.IV.Length);
-            Array.Copy(encryptedBytes, aesAlg.IV.Length, encryptedData, 0, encryptedData.Length);
+                aes.Decrypt(nonce, ciphertext, tag, plaintextBytes);
 
-            using ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, iv);
-
-            using MemoryStream msDecrypt = new MemoryStream(encryptedData);
-            using CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-            using StreamReader srDecrypt = new StreamReader(csDecrypt);
-            string decryptedMessage = srDecrypt.ReadToEnd();
-
-            return decryptedMessage;
+                return Encoding.UTF8.GetString(plaintextBytes);
+            }
         }
     }
 }
